@@ -9,114 +9,6 @@
 import SwiftUI
 import CoreImage
 
-extension UIColor {
-    convenience init(red: Int, green: Int, blue: Int) {
-        self.init(red: CGFloat(red) / 256.0, green: CGFloat(green) / 256.0, blue: CGFloat(blue) / 256.0, alpha: 1.0)
-    }
-
-    convenience init(rgb: Int) {
-        self.init(
-            red: (rgb >> 16) & 0xFF,
-            green: (rgb >> 8) & 0xFF,
-            blue: rgb & 0xFF
-        )
-    }
-
-    func toHexString() -> String {
-        let rgb = self.toHex()
-
-        let string = String(format:"#%08x", rgb)
-        return string
-    }
-
-    func toHex() -> Int {
-        var r: CGFloat = 0
-        var g: CGFloat = 0
-        var b: CGFloat = 0
-        var a: CGFloat = 0
-
-        getRed(&r, green: &g, blue: &b, alpha: &a)
-
-        let rgb: Int = (Int)(r*255) << 24 | (Int)(g*255) << 16 | (Int)(b*255) << 8 | (Int)(a*255) << 0
-        return rgb
-    }
-
-    // https://developer.apple.com/documentation/uikit/uicolor/1621949-gethue
-    var brightness: CGFloat {
-        var result: CGFloat = 0
-        if self.getHue(nil, saturation: nil, brightness: &result, alpha: nil) {
-            return result
-        } else {
-            return 0
-        }
-    }
-}
-
-extension Color {
-    init(rgb: Int) {
-        self.init(
-            red: Double((rgb >> 24) & 0xFF) / 256,
-            green: Double((rgb >> 16) & 0xFF) / 256,
-            blue: Double((rgb >> 8) & 0xFF) / 256,
-            opacity: Double(rgb & 0xFF) / 256
-        )
-    }
-
-    init(uiColor: UIColor) {
-        self.init(rgb: uiColor.toHex())
-    }
-}
-
-enum Colors {
-    case primary
-    case availabilityBlue
-    case availabilityRed
-    case borderGray
-    case successGreen
-
-    var color: UIColor {
-        switch self {
-        case .primary: return UIColor(rgb: 0xF5BD5D)
-        case .availabilityRed: return UIColor(rgb: 0xFF8D8D)
-        case .availabilityBlue: return UIColor(rgb: 0x74AEDF)
-        case .borderGray: return UIColor(rgb: 0xAFAFAF)
-        case .successGreen: return UIColor(rgb: 0x8DCA83)
-        }
-    }
-
-    var swiftUIColor: Color {
-        return Color(self.color)
-    }
-}
-
-extension Colors: View {
-    var body: some View {
-        Color(uiColor: self.color)
-    }
-}
-
-struct FilterDetailTitleSwiftUIView: View {
-    let title: String
-    let categories: [String]
-
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text(title)
-                .font(Font.system(size: 46).bold())
-                .lineLimit(1)
-                .allowsTightening(true)
-                .minimumScaleFactor(0.2)
-                .padding([.bottom], 10)
-            Text(categories.joined(separator: ", "))
-                .foregroundColor(
-                    Color(uiColor: .secondaryLabel)
-                )
-                .lineLimit(nil)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-    }
-}
-
 extension View {
     func erase() -> AnyView {
         return AnyView(self)
@@ -152,7 +44,6 @@ struct FilterDetailSwiftUIView: View {
                 )
             }, noneContent: {
                 ZStack {
-                    Colors.primary
                     Text("Select a filter to view details")
                         .foregroundColor(Color(.label))
                 }
@@ -160,39 +51,6 @@ struct FilterDetailSwiftUIView: View {
             }
         )
         .navigationBarTitle(Text(filterInfo?.name ?? ""), displayMode: .inline)
-    }
-}
-
-struct AvailableView: View {
-    enum AvailabilityType {
-        case ios
-        case macos
-
-        var color: Color {
-            switch self {
-            case .ios: return Colors.availabilityBlue.swiftUIColor
-            case .macos: return Colors.availabilityRed.swiftUIColor
-            }
-        }
-
-        var title: String {
-            switch self {
-            case .ios: return "iOS"
-            case .macos: return "macOS"
-            }
-        }
-    }
-
-    let text: String
-    let type: AvailabilityType
-
-    var body: some View {
-        Text("\(self.type.title): \(self.text)+")
-            .font(Font.system(size: 15).bold())
-            .foregroundColor(.white)
-            .padding(10)
-            .background(self.type.color)
-            .cornerRadius(8)
     }
 }
 
@@ -210,13 +68,11 @@ struct FilterDetailContentView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-//            Section(header: Text("PARAMETERS").bold().foregroundColor(Colors.primary.swiftUIColor)) {
-                VStack(alignment: .leading, spacing: 0) {
-                    ForEach(filterInfo.parameters, id: \.name) { parameter in
-                        FilterParameterSwiftUIView(parameter: parameter)
-                    }
-                }//.padding(.top, 8)
-//            }
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(filterInfo.parameters, id: \.name) { parameter in
+                    FilterParameterSwiftUIView(parameter: parameter)
+                }
+            }
 
             Button(action: {
                 self.didTapTryIt()
