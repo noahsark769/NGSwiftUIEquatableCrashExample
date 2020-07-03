@@ -115,11 +115,7 @@ extension CIVectorCodableWrapper: Codable {
     }
 }
 
-private func filterParameterType(forAttributesDict dict: [String: Any], className: String) throws -> String {
-    return ""
-}
-
-enum FilterParameterType: Encodable, FilterInformationalStringConvertible  {
+enum FilterParameterType: Encodable  {
     private enum CodingKeys: CodingKey {
         case kind
         case information
@@ -128,7 +124,6 @@ enum FilterParameterType: Encodable, FilterInformationalStringConvertible  {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(rawType, forKey: .kind)
-        try container.encode(self.informationalDescription, forKey: .information)
     }
 
     case time(info: FilterTimeParameterInfo)
@@ -221,106 +216,8 @@ enum FilterParameterType: Encodable, FilterInformationalStringConvertible  {
         }
     }
 
-    var informationalDescription: String? {
-        switch self {
-        case let .time(info): return (info.informationalDescription ?? "")
-        case let .scalar(info): return "Scalar. " + (info.informationalDescription ?? "")
-        case let .distance(info): return "Distance. " + (info.informationalDescription ?? "")
-        case let .unspecifiedNumber(info): return "Number. " + (info.informationalDescription ?? "")
-        case let .unspecifiedVector(info): return "Vector. " + (info.informationalDescription ?? "")
-        case let .angle(info): return "Angle. " + (info.informationalDescription ?? "")
-        case .boolean: return "Boolean."
-        case .integer: return "Integer."
-        case let .count(info): return "Count. " + (info.informationalDescription ?? "")
-        case .image: return "Image."
-        case .gradientImage: return "Gradient image."
-        case .attributedString: return "Attributed String."
-        case let .data(info): return "Data. " + (info.informationalDescription ?? "")
-        case .barcode: return "Barcode descriptor."
-        case .cameraCalibrationData: return "Camera calibration data."
-        case let .color(info): return "Color. " + (info.informationalDescription ?? "")
-        case let .opaqueColor(info): return "Opaque color. " + (info.informationalDescription ?? "")
-        case let .position(info): return "Position. " + (info.informationalDescription ?? "")
-        case let .position3(info): return "Position (3D). " + (info.informationalDescription ?? "")
-        case let .transform(info): return "Transform. " + (info.informationalDescription ?? "")
-        case let .rectangle(info): return "Rectangle. " + (info.informationalDescription ?? "")
-        case let .unspecifiedObject(info): return "Object. " + (info.informationalDescription ?? "")
-        case .mlModel: return "Machine learning model."
-        case let .string(info): return "String. " + (info.informationalDescription ?? "")
-        case .cgImageMetadata: return "Image metadata."
-        case let .offset(info): return "Offset. " + (info.informationalDescription ?? "")
-        case .array: return "Array."
-        }
-    }
-
     init(filterAttributeDict: [String: Any], className: String) throws {
-        let parameterTypeString = try filterParameterType(forAttributesDict: filterAttributeDict, className: className)
-        var specificDict = filterAttributeDict
-        specificDict.removeValue(forKey: kCIAttributeType)
-        switch parameterTypeString {
-        case kCIAttributeTypeTime:
-            self = .time(info: try FilterTimeParameterInfo(filterAttributeDict: specificDict))
-        case kCIAttributeTypeScalar:
-            self = .scalar(info: try FilterNumberParameterInfo(filterAttributeDict: specificDict))
-        case kCIAttributeTypeDistance:
-            self = .distance(info: try FilterNumberParameterInfo(filterAttributeDict: specificDict))
-        case kCIAttributeTypeAngle:
-            self = .angle(info: try FilterNumberParameterInfo(filterAttributeDict: specificDict))
-        case kCIAttributeTypeBoolean:
-            self = .boolean(info: try FilterNumberParameterInfo(filterAttributeDict: specificDict))
-        case kCIAttributeTypeInteger:
-            self = .integer
-        case kCIAttributeTypeCount:
-            self = .count(info: try FilterNumberParameterInfo(filterAttributeDict: specificDict))
-        case "CIFilter.io_UnkeyedImageType":
-            fallthrough
-        case kCIAttributeTypeImage:
-            self = .image
-        case "CIFilter.io_UnspecifiedNumberType":
-            self = .unspecifiedNumber(info: try FilterNumberParameterInfo(filterAttributeDict: specificDict))
-        case "CIFilter.io_TransformType":
-            fallthrough
-        case kCIAttributeTypeTransform:
-            self = .transform(info: try FilterTransformParameterInfo(filterAttributeDict: specificDict))
-        case kCIAttributeTypeRectangle:
-            self = .rectangle(info: try FilterVectorParameterInfo(filterAttributeDict: specificDict))
-        case kCIAttributeTypePosition:
-            self = .position(info: try FilterVectorParameterInfo(filterAttributeDict: specificDict))
-        case kCIAttributeTypePosition3:
-            self = .position3(info: try FilterVectorParameterInfo(filterAttributeDict: specificDict))
-        case kCIAttributeTypeOffset:
-            self = .offset(info: try FilterVectorParameterInfo(filterAttributeDict: specificDict))
-        case kCIAttributeTypeGradient:
-            self = .gradientImage
-        case "CIFilter.io_AttributedStringType":
-            self = .attributedString
-        case "CIFilter.io_DataType":
-            self = .data(info: try FilterDataParameterInfo(filterAttributeDict: specificDict))
-        case "CIFilter.io_BarcodeDescriptorType":
-            self = .barcode
-        case "CIFilter.io_CameraCalibrationDataType":
-            self = .cameraCalibrationData
-        case "CIFilter.io_ColorType":
-            fallthrough
-        case kCIAttributeTypeColor:
-            self = .color(info: try FilterColorParameterInfo(filterAttributeDict: specificDict))
-        case kCIAttributeTypeOpaqueColor:
-            self = .opaqueColor(info: try FilterColorParameterInfo(filterAttributeDict: specificDict))
-        case "CIFilter.io_UnspecifiedVectorType":
-            self = .unspecifiedVector(info: try FilterVectorParameterInfo(filterAttributeDict: specificDict))
-        case "CIFilter.io_UnspecifiedObjectType":
-            self = .unspecifiedObject(info: try FilterUnspecifiedObjectParameterInfo(filterAttributeDict: specificDict))
-        case "CIFilter.io_MLModelType":
-            self = .mlModel
-        case "CIFilter.io_StringType":
-            self = .string(info: try FilterStringParameterInfo(filterAttributeDict: specificDict))
-        case "CIFilter.io_CGImageMetadataRefType":
-            self = .cgImageMetadata
-        case "CIFilter.io_ArrayType":
-            self = .array
-        default:
-            self = .barcode
-        }
+        self = .barcode
     }
 }
 
@@ -409,11 +306,7 @@ struct FilterInfo: Encodable {
     }
 }
 
-protocol FilterInformationalStringConvertible {
-    var informationalDescription: String? { get }
-}
-
-struct FilterTransformParameterInfo: Codable, FilterInformationalStringConvertible {
+struct FilterTransformParameterInfo: Codable {
     let defaultValue: CGAffineTransform
     let identity: CGAffineTransform
 
@@ -427,7 +320,7 @@ struct FilterTransformParameterInfo: Codable, FilterInformationalStringConvertib
     }
 }
 
-struct FilterVectorParameterInfo: Codable, FilterInformationalStringConvertible {
+struct FilterVectorParameterInfo: Codable {
     let defaultValue: CIVectorCodableWrapper?
     let identity: CIVectorCodableWrapper?
 
@@ -461,7 +354,7 @@ struct FilterVectorParameterInfo: Codable, FilterInformationalStringConvertible 
     }
 }
 
-struct FilterDataParameterInfo: Codable, FilterInformationalStringConvertible {
+struct FilterDataParameterInfo: Codable {
     let defaultValue: Data?
     let identity: Data?
 
@@ -475,7 +368,7 @@ struct FilterDataParameterInfo: Codable, FilterInformationalStringConvertible {
     }
 }
 
-struct FilterColorParameterInfo: Encodable, FilterInformationalStringConvertible {
+struct FilterColorParameterInfo: Encodable {
     let defaultValue: CIColor
     let identity: CIColor?
 
@@ -495,7 +388,7 @@ struct FilterColorParameterInfo: Encodable, FilterInformationalStringConvertible
     }
 }
 
-struct FilterUnspecifiedObjectParameterInfo: Encodable, FilterInformationalStringConvertible {
+struct FilterUnspecifiedObjectParameterInfo: Encodable {
     let defaultValue: NSObject?
 
     init(filterAttributeDict: [String: Any]) throws {
@@ -511,7 +404,7 @@ struct FilterUnspecifiedObjectParameterInfo: Encodable, FilterInformationalStrin
     }
 }
 
-struct FilterStringParameterInfo: Codable, FilterInformationalStringConvertible {
+struct FilterStringParameterInfo: Codable {
     let defaultValue: String?
 
     init(filterAttributeDict: [String: Any]) throws {
@@ -523,7 +416,7 @@ struct FilterStringParameterInfo: Codable, FilterInformationalStringConvertible 
     }
 }
 
-struct FilterNumberParameterInfo<T: Codable>: Codable, FilterInformationalStringConvertible {
+struct FilterNumberParameterInfo<T: Codable>: Codable {
     let minValue: T?
     let maxValue: T?
     let defaultValue: T?
@@ -548,7 +441,7 @@ struct FilterNumberParameterInfo<T: Codable>: Codable, FilterInformationalString
     }
 }
 
-struct FilterTimeParameterInfo: Codable, FilterInformationalStringConvertible {
+struct FilterTimeParameterInfo: Codable {
     let numberInfo: FilterNumberParameterInfo<Float>
     let identity: Float
 
