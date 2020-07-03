@@ -49,9 +49,6 @@ enum FilterParameterType: Encodable  {
         try container.encode(rawType, forKey: .kind)
     }
 
-    case time(info: FilterTimeParameterInfo)
-    case scalar(info: FilterNumberParameterInfo<Float>)
-    case distance(info: FilterNumberParameterInfo<Float>)
     case unspecifiedNumber(info: FilterNumberParameterInfo<Float>)
     case angle(info: FilterNumberParameterInfo<Float>)
     case boolean(info: FilterNumberParameterInfo<Int>)
@@ -65,9 +62,6 @@ enum FilterParameterType: Encodable  {
     case string(info: FilterStringParameterInfo)
 
     enum RawType: String, Encodable {
-        case time
-        case scalar
-        case distance
         case unspecifiedNumber
         case unspecifiedVector
         case angle
@@ -95,9 +89,6 @@ enum FilterParameterType: Encodable  {
 
     var rawType: RawType {
         switch self {
-        case .time: return .time
-        case .scalar: return .scalar
-        case .distance: return .distance
         case .unspecifiedNumber: return .unspecifiedNumber
         case .angle: return .angle
         case .boolean: return .boolean
