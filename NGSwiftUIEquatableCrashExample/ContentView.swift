@@ -22,48 +22,6 @@ extension UIColor {
         )
     }
 
-    // Adapted from https://gist.github.com/yannickl/16f0ed38f0698d9a8ae7, modified to accept alpha
-    // values. Works with strings with or without "#", 6 char strings like "a735b5", 8 char strings
-    // with alpha value like "836be64"
-    convenience init?(hexString: String) {
-        let hexString = hexString.trimmingCharacters(in: .whitespacesAndNewlines)
-        let scanner = Scanner(string: hexString)
-
-        if (hexString.hasPrefix("#")) {
-            scanner.scanLocation = 1
-        }
-
-        let initialPosition = scanner.scanLocation
-        var color: UInt32 = 0
-        guard scanner.scanHexInt32(&color) else {
-            return nil
-        }
-        let numCharsScanned = scanner.scanLocation - initialPosition
-        guard numCharsScanned == 6 || numCharsScanned == 8 else {
-            return nil
-        }
-
-        let alphaOffset = numCharsScanned == 8 ? 8 : 0
-        let mask = 0x000000FF
-        let r = Int(color >> (16 + alphaOffset)) & mask
-        let g = Int(color >> (8 + alphaOffset)) & mask
-        let b = Int(color >> (alphaOffset)) & mask
-
-        let red = CGFloat(r) / 255.0
-        let green = CGFloat(g) / 255.0
-        let blue = CGFloat(b) / 255.0
-
-        let alpha: CGFloat
-        if alphaOffset > 0 {
-            let a = Int(color) & mask
-            alpha = CGFloat(a) / 255.0
-        } else {
-            alpha = 1
-        }
-
-        self.init(red: red, green: green, blue: blue, alpha: alpha)
-    }
-
     func toHexString() -> String {
         let rgb = self.toHex()
 
@@ -270,60 +228,25 @@ struct FilterParameterSwiftUIView: View {
     }
 }
 
-struct TryItButtonStyle: ButtonStyle {
-    func makeBody(configuration: Self.Configuration) -> some View {
-        configuration.label
-            .padding([.leading, .trailing], 20)
-            .padding([.top, .bottom], 10)
-            .frame(minWidth: 200)
-            .background(Colors.primary)
-            .scaleEffect(configuration.isPressed ? 0.95: 1)
-            .foregroundColor(.white)
-            .cornerRadius(6)
-            .animation(.spring())
-    }
-}
-
 struct FilterDetailContentView: View {
     let filterInfo: FilterInfo
     let didTapTryIt: () -> Void
 
-    @SwiftUI.Environment(\.horizontalSizeClass) var horizontalSizeClass
-
     var body: some View {
-        ScrollView([.vertical]) {
-            VStack(alignment: .leading) {
-                FilterDetailTitleSwiftUIView(title: filterInfo.name, categories: filterInfo.categories)
-                Divider()
-                HStack {
-                    Spacer()
-                    AvailableView(text: filterInfo.availableIOS, type: .ios)
-                    AvailableView(text: filterInfo.availableMac, type: .macos)
-                }.padding([.bottom], 20)
-                Text(filterInfo.description ?? "No description provided by CoreImage.")
-                    .padding([.bottom], 20)
-
-                Section(header: Text("PARAMETERS").bold().foregroundColor(Colors.primary.swiftUIColor)) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        ForEach(filterInfo.parameters, id: \.name) { parameter in
-                            FilterParameterSwiftUIView(parameter: parameter)
-                        }
-                    }.padding(.top, 8)
-                }
-
-                HStack(alignment: .center) {
-                    Spacer()
-                    Button(action: {
-                        self.didTapTryIt()
-                    }, label: {
-                        Text("Try It!")
-                    })
-                    .buttonStyle(TryItButtonStyle())
-                    Spacer()
-                }
+        VStack(alignment: .leading) {
+            Section(header: Text("PARAMETERS").bold().foregroundColor(Colors.primary.swiftUIColor)) {
+                VStack(alignment: .leading, spacing: 0) {
+                    ForEach(filterInfo.parameters, id: \.name) { parameter in
+                        FilterParameterSwiftUIView(parameter: parameter)
+                    }
+                }.padding(.top, 8)
             }
-            .padding(10)
-            .frame(maxWidth: horizontalSizeClass == .compact ? .infinity : 600)
+
+            Button(action: {
+                self.didTapTryIt()
+            }, label: {
+                Text("Try It!")
+            })
         }
     }
 }
