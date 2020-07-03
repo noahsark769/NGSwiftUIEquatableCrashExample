@@ -7,32 +7,6 @@
 //
 
 import SwiftUI
-import CoreImage
-
-struct ParameterView: View {
-    let parameter: Parameter
-
-    var body: some View {
-        Text("Text here")
-    }
-}
-
-struct DetailView: View {
-    let info: Info
-    let didTapTryIt: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading) {
-            ParameterView(parameter: info.parameters.first!)
-
-            Button(action: {
-                self.didTapTryIt()
-            }, label: {
-                Text("Try It!")
-            })
-        }
-    }
-}
 
 enum Type {
     // If you remove the associated type here it works?
@@ -57,19 +31,26 @@ struct Info {
     let parameters = [Parameter()]
 }
 
-struct ContentView: View {
-    let value: Info
-    let didTap: () -> Void
-
-    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+struct ParameterView: View {
+    let parameter: Parameter
 
     var body: some View {
-        VStack {
-            Text("Current value: (\(horizontalSizeClass == .compact ? "Compact" : "Not Compact"))")
+        Text("Text here")
+    }
+}
+
+struct DetailView: View {
+    let info: Info
+    let didTapTryIt: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            ParameterView(parameter: info.parameters.first!)
+
             Button(action: {
-                self.didTap()
+                self.didTapTryIt()
             }, label: {
-                Text("Tap here")
+                Text("Try It!")
             })
         }
     }
