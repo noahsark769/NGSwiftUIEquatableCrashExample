@@ -83,38 +83,6 @@ struct FilterDetailContentView: View {
     }
 }
 
-extension CIVector {
-    convenience init(floats: [CGFloat]) {
-        var unsafePointer: UnsafePointer<CGFloat>? = nil
-        floats.withUnsafeBufferPointer { unsafeBufferPointer in
-            unsafePointer = unsafeBufferPointer.baseAddress!
-        }
-        self.init(values: unsafePointer!, count: floats.count)
-    }
-}
-
-struct CIVectorCodableWrapper {
-    let vector: CIVector
-}
-
-extension CIVectorCodableWrapper: Codable {
-    public init(from decoder: Decoder) throws {
-        var container = try decoder.unkeyedContainer()
-        var floats: [CGFloat] = []
-        while !container.isAtEnd {
-            floats.append(try container.decode(CGFloat.self))
-        }
-        vector = CIVector(floats: floats)
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.unkeyedContainer()
-        for i in 0..<vector.count {
-            try container.encode(vector.value(at: i))
-        }
-    }
-}
-
 enum FilterParameterType: Encodable  {
     private enum CodingKeys: CodingKey {
         case kind
@@ -130,7 +98,6 @@ enum FilterParameterType: Encodable  {
     case scalar(info: FilterNumberParameterInfo<Float>)
     case distance(info: FilterNumberParameterInfo<Float>)
     case unspecifiedNumber(info: FilterNumberParameterInfo<Float>)
-    case unspecifiedVector(info: FilterVectorParameterInfo)
     case angle(info: FilterNumberParameterInfo<Float>)
     case boolean(info: FilterNumberParameterInfo<Int>)
     case integer
@@ -143,15 +110,11 @@ enum FilterParameterType: Encodable  {
     case cameraCalibrationData
     case color(info: FilterColorParameterInfo)
     case opaqueColor(info: FilterColorParameterInfo)
-    case position(info: FilterVectorParameterInfo)
-    case position3(info: FilterVectorParameterInfo)
     case transform(info: FilterTransformParameterInfo)
-    case rectangle(info: FilterVectorParameterInfo)
     case unspecifiedObject(info: FilterUnspecifiedObjectParameterInfo)
     case mlModel
     case string(info: FilterStringParameterInfo)
     case cgImageMetadata
-    case offset(info: FilterVectorParameterInfo)
     case array
 
     enum RawType: String, Encodable {
@@ -190,7 +153,6 @@ enum FilterParameterType: Encodable  {
         case .scalar: return .scalar
         case .distance: return .distance
         case .unspecifiedNumber: return .unspecifiedNumber
-        case .unspecifiedVector: return .unspecifiedVector
         case .angle: return .angle
         case .boolean: return .boolean
         case .integer: return .integer
@@ -203,15 +165,11 @@ enum FilterParameterType: Encodable  {
         case .cameraCalibrationData: return .cameraCalibrationData
         case .color: return .color
         case .opaqueColor: return .opaqueColor
-        case .position: return .position
-        case .position3: return .position3
         case .transform: return .transform
-        case .rectangle: return .rectangle
         case .unspecifiedObject: return .unspecifiedObject
         case .mlModel: return .mlModel
         case .string: return .string
         case .cgImageMetadata: return .cgImageMetadata
-        case .offset: return .offset
         case .array: return .array
         }
     }
@@ -221,17 +179,13 @@ enum FilterParameterType: Encodable  {
     }
 }
 
-
 struct FilterParameterInfo: Encodable {
     let name: String
     let type: FilterParameterType
 
     init(filterAttributeDict: [String: Any], name: String) throws {
         self.name = name
-
-        var parameterSpecificDict = filterAttributeDict
-
-        type = try FilterParameterType(filterAttributeDict: parameterSpecificDict, className: "")
+        type = try FilterParameterType(filterAttributeDict: filterAttributeDict, className: "")
     }
 }
 
@@ -269,22 +223,12 @@ extension FilterParameterInfo {
 }
 
 struct FilterInfo: Encodable {
-    let categories: [String]
-    let availableMac: String
-    let availableIOS: String
-    let displayName: String
-    let description: String?
     let name: String
     let parameters: [FilterParameterInfo]
 
     init(filter: CIFilter) throws {
         let filterAttributeDict = filter.attributes
-        categories = ["one", "rwo"]
-        availableIOS = ""
-        availableMac = ""
-        displayName = ""
         name = "NAME"
-        description = CIFilter.localizedDescription(forFilterName: filter.name)
 
         var resultParameters: [FilterParameterInfo] = []
         var keysParsed = 6
@@ -316,40 +260,6 @@ struct FilterTransformParameterInfo: Codable {
     }
 
     var informationalDescription: String? {
-        return "Default: " + String(describing: defaultValue)
-    }
-}
-
-struct FilterVectorParameterInfo: Codable {
-    let defaultValue: CIVectorCodableWrapper?
-    let identity: CIVectorCodableWrapper?
-
-    init(filterAttributeDict: [String: Any]) throws {
-        defaultValue = nil
-        identity = nil
-    }
-
-    enum CodingKeys: String, CodingKey {
-        case defaultValue
-        case identity
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        defaultValue = try container.decodeIfPresent(CIVectorCodableWrapper.self, forKey: .defaultValue)
-        identity = try container.decodeIfPresent(CIVectorCodableWrapper.self, forKey: .identity)
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(defaultValue, forKey: .defaultValue)
-        try container.encode(identity, forKey: .identity)
-    }
-
-    var informationalDescription: String? {
-        guard let defaultValue = self.defaultValue else {
-            return nil
-        }
         return "Default: " + String(describing: defaultValue)
     }
 }
