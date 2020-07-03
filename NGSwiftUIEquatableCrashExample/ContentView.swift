@@ -27,13 +27,12 @@ enum Type {
 }
 
 struct DetailView: View {
-    let type: Type = .one(info: "one")
-    let didTap: () -> Void
+    @State var type: Type = .one(info: "one")
 
     var body: some View {
         VStack(alignment: .leading) {
             Button(action: {
-                self.didTap()
+                self.type = .one(info: "one")
             }, label: {
                 Text("Tap here to crash")
             })
