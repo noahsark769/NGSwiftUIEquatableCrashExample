@@ -49,17 +49,18 @@ enum FilterParameterType: Encodable  {
         try container.encode(rawType, forKey: .kind)
     }
 
-    case unspecifiedNumber(info: FilterNumberParameterInfo<Float>)
-    case angle(info: FilterNumberParameterInfo<Float>)
-    case boolean(info: FilterNumberParameterInfo<Int>)
-    case count(info: FilterNumberParameterInfo<Int>)
-    case data(info: FilterDataParameterInfo)
+    // If you remove the associated type here it works?
+    case unspecifiedNumber(info: String)
+    case angle(info: String)
+    case boolean(info: String)
+    case count(info: String)
+    case data(info: String)
     case barcode
-    case color(info: FilterColorParameterInfo)
-    case opaqueColor(info: FilterColorParameterInfo)
-    case transform(info: FilterTransformParameterInfo)
-    case unspecifiedObject(info: FilterUnspecifiedObjectParameterInfo)
-    case string(info: FilterStringParameterInfo)
+    case color(info: String)
+    case opaqueColor(info: String)
+    case transform(info: String)
+    case unspecifiedObject(info: String)
+    case string(info: String)
 
     enum RawType: String, Encodable {
         case unspecifiedNumber
