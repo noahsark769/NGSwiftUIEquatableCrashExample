@@ -38,16 +38,7 @@ struct FilterDetailContentView: View {
     }
 }
 
-enum FilterParameterType: Encodable  {
-    private enum CodingKeys: CodingKey {
-        case kind
-        case information
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-    }
-
+enum FilterParameterType {
     // If you remove the associated type here it works?
     case unspecifiedNumber(info: String)
     case angle(info: String)
@@ -62,12 +53,12 @@ enum FilterParameterType: Encodable  {
     case string(info: String)
 }
 
-struct FilterParameterInfo: Encodable {
+struct FilterParameterInfo {
     let name: String
     let type: FilterParameterType
 
-    init(filterAttributeDict: [String: Any], name: String) throws {
-        self.name = name
+    init() throws {
+        self.name = "hey"
         type = .barcode
     }
 }
@@ -105,7 +96,7 @@ extension FilterParameterInfo {
     ]
 }
 
-struct FilterInfo: Encodable {
+struct FilterInfo {
     let name: String
     let parameters: [FilterParameterInfo]
 
@@ -126,7 +117,7 @@ struct FilterInfo: Encodable {
                     fatalError()
                 }
                 keysParsed += 1
-                resultParameters.append(try FilterParameterInfo(filterAttributeDict: parameterDict, name: paramKey))
+                resultParameters.append(try FilterParameterInfo())
             }
         }
         parameters = resultParameters
