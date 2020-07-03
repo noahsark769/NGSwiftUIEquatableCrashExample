@@ -101,26 +101,8 @@ struct FilterInfo {
     let parameters: [FilterParameterInfo]
 
     init(filter: CIFilter) throws {
-        let filterAttributeDict = filter.attributes
         name = "NAME"
-
-        var resultParameters: [FilterParameterInfo] = []
-        var keysParsed = 6
-        let keysToCheck = Set(FilterParameterInfo.filterParameterKeys).union(Set(
-            filterAttributeDict.keys.filter({
-                $0.starts(with: "input") || $0.starts(with: "output")
-            })
-        ))
-        for paramKey in keysToCheck.sorted() {
-            if let parameterDict = filterAttributeDict[paramKey] {
-                guard let parameterDict = parameterDict as? [String: Any] else {
-                    fatalError()
-                }
-                keysParsed += 1
-                resultParameters.append(try FilterParameterInfo())
-            }
-        }
-        parameters = resultParameters
+        parameters = [try FilterParameterInfo()]
     }
 }
 
