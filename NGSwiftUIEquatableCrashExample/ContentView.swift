@@ -116,81 +116,7 @@ extension CIVectorCodableWrapper: Codable {
 }
 
 private func filterParameterType(forAttributesDict dict: [String: Any], className: String) throws -> String {
-    if let parameterTypeString: String = dict.optionalValue(key: kCIAttributeType) {
-        return parameterTypeString
-    } else {
-        if dict[kCIAttributeDefault] is CGAffineTransform || className == "NSAffineTransform" {
-            return "CIFilter.io_TransformType"
-        }
-        if className == "NSAttributedString" {
-            return "CIFilter.io_AttributedStringType"
-        }
-        if className == "NSNumber" {
-            return "CIFilter.io_UnspecifiedNumberType"
-        }
-        if className == "NSData" {
-            return "CIFilter.io_DataType"
-        }
-        if className == "CIBarcodeDescriptor" {
-            return "CIFilter.io_BarcodeDescriptorType"
-        }
-        if className == "AVCameraCalibrationData" {
-            return "CIFilter.io_CameraCalibrationDataType"
-        }
-        if className == "CIColor" {
-            return "CIFilter.io_ColorType"
-        }
-        if className == "CIVector" {
-            return "CIFilter.io_UnspecifiedVectorType"
-        }
-        if className == "NSObject" {
-            return "CIFilter.io_UnspecifiedObjectType"
-        }
-        if className == "MLModel" {
-            return "CIFilter.io_MLModelType"
-        }
-        if className == "NSString" {
-            return "CIFilter.io_StringType"
-        }
-        if className == "CIImage" {
-            return "CIFilter.io_UnkeyedImageType"
-        }
-        if className == "CGImageMetadataRef" {
-            return "CIFilter.io_CGImageMetadataRefType"
-        }
-        if className == "NSArray" {
-            return "CIFilter.io_ArrayType"
-        }
-        fatalError()
-    }
-}
-
-extension Dictionary {
-    enum ValidationError<Key>: Error {
-        case notFound(key: Key)
-        case wrongType(key: Key)
-    }
-
-    func validatedValue<T>(key: Key) throws -> T {
-        guard let maybeValue = self[key] else {
-            throw ValidationError.notFound(key: key)
-        }
-
-        guard let value = maybeValue as? T else {
-            throw ValidationError.wrongType(key: key)
-        }
-        return value
-    }
-
-    func optionalValue<T>(key: Key) -> T? {
-        return self[key] as? T
-    }
-
-    func removing(key: Key) -> Dictionary<Key, Value> {
-        var dict = self
-        dict.removeValue(forKey: key)
-        return dict
-    }
+    return ""
 }
 
 enum FilterParameterType: Encodable, FilterInformationalStringConvertible  {
@@ -393,7 +319,7 @@ enum FilterParameterType: Encodable, FilterInformationalStringConvertible  {
         case "CIFilter.io_ArrayType":
             self = .array
         default:
-            fatalError()
+            self = .barcode
         }
     }
 }
@@ -408,7 +334,7 @@ struct FilterParameterInfo: Encodable {
 
         var parameterSpecificDict = filterAttributeDict
 
-        type = try FilterParameterType(filterAttributeDict: parameterSpecificDict, className: try filterAttributeDict.validatedValue(key: kCIAttributeClass))
+        type = try FilterParameterType(filterAttributeDict: parameterSpecificDict, className: "")
     }
 }
 
@@ -451,18 +377,16 @@ struct FilterInfo: Encodable {
     let availableIOS: String
     let displayName: String
     let description: String?
-    let referenceDocumentation: URL
     let name: String
     let parameters: [FilterParameterInfo]
 
     init(filter: CIFilter) throws {
         let filterAttributeDict = filter.attributes
-        categories = try filterAttributeDict.validatedValue(key: kCIAttributeFilterCategories)
-        availableIOS = try filterAttributeDict.validatedValue(key: kCIAttributeFilterAvailable_iOS)
-        availableMac = try filterAttributeDict.validatedValue(key: kCIAttributeFilterAvailable_Mac)
-        displayName = try filterAttributeDict.validatedValue(key: kCIAttributeFilterDisplayName)
-        referenceDocumentation = try filterAttributeDict.validatedValue(key: kCIAttributeReferenceDocumentation)
-        name = try filterAttributeDict.validatedValue(key: kCIAttributeFilterName)
+        categories = ["one", "rwo"]
+        availableIOS = ""
+        availableMac = ""
+        displayName = ""
+        name = "NAME"
         description = CIFilter.localizedDescription(forFilterName: filter.name)
 
         var resultParameters: [FilterParameterInfo] = []
@@ -494,8 +418,8 @@ struct FilterTransformParameterInfo: Codable, FilterInformationalStringConvertib
     let identity: CGAffineTransform
 
     init(filterAttributeDict: [String: Any]) throws {
-        defaultValue = try filterAttributeDict.validatedValue(key: kCIAttributeDefault)
-        identity = try filterAttributeDict.validatedValue(key: kCIAttributeIdentity)
+        defaultValue = .identity
+        identity = .identity
     }
 
     var informationalDescription: String? {
@@ -508,8 +432,8 @@ struct FilterVectorParameterInfo: Codable, FilterInformationalStringConvertible 
     let identity: CIVectorCodableWrapper?
 
     init(filterAttributeDict: [String: Any]) throws {
-        defaultValue = filterAttributeDict.optionalValue(key: kCIAttributeDefault)
-        identity = filterAttributeDict.optionalValue(key: kCIAttributeIdentity)
+        defaultValue = nil
+        identity = nil
     }
 
     enum CodingKeys: String, CodingKey {
@@ -542,8 +466,8 @@ struct FilterDataParameterInfo: Codable, FilterInformationalStringConvertible {
     let identity: Data?
 
     init(filterAttributeDict: [String: Any]) throws {
-        defaultValue = filterAttributeDict.optionalValue(key: kCIAttributeDefault)
-        identity = filterAttributeDict.optionalValue(key: kCIAttributeIdentity)
+        defaultValue = nil
+        identity = nil
     }
 
     var informationalDescription: String? {
@@ -556,8 +480,8 @@ struct FilterColorParameterInfo: Encodable, FilterInformationalStringConvertible
     let identity: CIColor?
 
     init(filterAttributeDict: [String: Any]) throws {
-        defaultValue = try filterAttributeDict.validatedValue(key: kCIAttributeDefault)
-        identity = filterAttributeDict.optionalValue(key: kCIAttributeIdentity)
+        defaultValue = .red
+        identity = nil
     }
 
     func encode(to encoder: Encoder) throws {
@@ -575,7 +499,7 @@ struct FilterUnspecifiedObjectParameterInfo: Encodable, FilterInformationalStrin
     let defaultValue: NSObject?
 
     init(filterAttributeDict: [String: Any]) throws {
-        defaultValue = filterAttributeDict.optionalValue(key: kCIAttributeDefault)
+        defaultValue = nil
     }
 
     func encode(to encoder: Encoder) throws {
@@ -591,7 +515,7 @@ struct FilterStringParameterInfo: Codable, FilterInformationalStringConvertible 
     let defaultValue: String?
 
     init(filterAttributeDict: [String: Any]) throws {
-        defaultValue = filterAttributeDict.optionalValue(key: kCIAttributeDefault)
+        defaultValue = nil
     }
 
     var informationalDescription: String? {
@@ -608,12 +532,12 @@ struct FilterNumberParameterInfo<T: Codable>: Codable, FilterInformationalString
     let identity: T?
 
     init(filterAttributeDict: [String: Any]) throws {
-        minValue = filterAttributeDict.optionalValue(key: kCIAttributeMin)
-        maxValue = filterAttributeDict.optionalValue(key: kCIAttributeMax)
-        defaultValue = filterAttributeDict.optionalValue(key: kCIAttributeDefault)
-        sliderMin = filterAttributeDict.optionalValue(key: kCIAttributeSliderMin)
-        sliderMax = filterAttributeDict.optionalValue(key: kCIAttributeSliderMax)
-        identity = filterAttributeDict.optionalValue(key: kCIAttributeIdentity)
+        minValue = nil
+        maxValue = nil
+        defaultValue = nil
+        sliderMin = nil
+        sliderMax = nil
+        identity = nil
     }
 
     var informationalDescription: String? {
@@ -629,8 +553,8 @@ struct FilterTimeParameterInfo: Codable, FilterInformationalStringConvertible {
     let identity: Float
 
     init(filterAttributeDict: [String: Any]) throws {
-        identity = try filterAttributeDict.validatedValue(key: kCIAttributeIdentity)
-        numberInfo = try FilterNumberParameterInfo(filterAttributeDict: filterAttributeDict.removing(key: kCIAttributeIdentity))
+        identity = 0
+        numberInfo = try FilterNumberParameterInfo(filterAttributeDict: filterAttributeDict)
     }
 
     var informationalDescription: String? {
