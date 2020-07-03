@@ -103,10 +103,6 @@ enum FilterParameterType: Encodable  {
         case .string: return .string
         }
     }
-
-    init(filterAttributeDict: [String: Any], className: String) throws {
-        self = .barcode
-    }
 }
 
 struct FilterParameterInfo: Encodable {
@@ -115,7 +111,7 @@ struct FilterParameterInfo: Encodable {
 
     init(filterAttributeDict: [String: Any], name: String) throws {
         self.name = name
-        type = try FilterParameterType(filterAttributeDict: filterAttributeDict, className: "")
+        type = .barcode
     }
 }
 
