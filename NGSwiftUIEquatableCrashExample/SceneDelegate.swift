@@ -20,15 +20,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
 
         // Create the SwiftUI view that provides the window contents.
-        let contentView = FilterDetailSwiftUIView(filterInfo: try! FilterInfo(filter: CIFilter(name: "CIThermal")!), didTapTryIt: { })
+        let contentView = FilterDetailContentView(filterInfo: try! FilterInfo(filter: CIFilter(name: "CIThermal")!), didTapTryIt: { })
 
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
 
             let controller = UIHostingController(rootView: contentView)
-            controller.rootView = FilterDetailSwiftUIView(filterInfo: try! FilterInfo(filter: CIFilter(name: "CIBoxBlur")!), didTapTryIt: {
-                controller.rootView = FilterDetailSwiftUIView(filterInfo: try! FilterInfo(filter: CIFilter(name: "CIBokehBlur")!), didTapTryIt: { })
+            controller.rootView = FilterDetailContentView(filterInfo: try! FilterInfo(filter: CIFilter(name: "CIBoxBlur")!), didTapTryIt: {
+                controller.rootView = FilterDetailContentView(filterInfo: try! FilterInfo(filter: CIFilter(name: "CIBokehBlur")!), didTapTryIt: { })
             })
             window.rootViewController = controller
             self.window = window

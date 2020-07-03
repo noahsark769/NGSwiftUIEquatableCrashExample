@@ -9,51 +9,6 @@
 import SwiftUI
 import CoreImage
 
-extension View {
-    func erase() -> AnyView {
-        return AnyView(self)
-    }
-}
-
-struct OptionalContent<SomeViewType: View, NoneViewType: View, OptionalType>: View {
-    let value: OptionalType?
-
-    let someContent: (OptionalType) -> SomeViewType
-    let noneContent: () -> NoneViewType
-
-    var body: AnyView {
-        if let value = value {
-            return someContent(value).erase()
-        } else {
-            return noneContent().erase()
-        }
-    }
-}
-
-struct FilterDetailSwiftUIView: View {
-    let filterInfo: FilterInfo?
-    let didTapTryIt: () -> Void
-
-    var body: some View {
-        OptionalContent(
-            value: filterInfo,
-            someContent: { filterInfo in
-                FilterDetailContentView(
-                    filterInfo: filterInfo,
-                    didTapTryIt: self.didTapTryIt
-                )
-            }, noneContent: {
-                ZStack {
-                    Text("Select a filter to view details")
-                        .foregroundColor(Color(.label))
-                }
-                .edgesIgnoringSafeArea([.top])
-            }
-        )
-        .navigationBarTitle(Text(filterInfo?.name ?? ""), displayMode: .inline)
-    }
-}
-
 struct FilterParameterSwiftUIView: View {
     let parameter: FilterParameterInfo
 
@@ -100,22 +55,14 @@ enum FilterParameterType: Encodable  {
     case unspecifiedNumber(info: FilterNumberParameterInfo<Float>)
     case angle(info: FilterNumberParameterInfo<Float>)
     case boolean(info: FilterNumberParameterInfo<Int>)
-    case integer
     case count(info: FilterNumberParameterInfo<Int>)
-    case image
-    case gradientImage
-    case attributedString
     case data(info: FilterDataParameterInfo)
     case barcode
-    case cameraCalibrationData
     case color(info: FilterColorParameterInfo)
     case opaqueColor(info: FilterColorParameterInfo)
     case transform(info: FilterTransformParameterInfo)
     case unspecifiedObject(info: FilterUnspecifiedObjectParameterInfo)
-    case mlModel
     case string(info: FilterStringParameterInfo)
-    case cgImageMetadata
-    case array
 
     enum RawType: String, Encodable {
         case time
@@ -144,7 +91,6 @@ enum FilterParameterType: Encodable  {
         case string
         case cgImageMetadata
         case offset
-        case array
     }
 
     var rawType: RawType {
@@ -155,22 +101,14 @@ enum FilterParameterType: Encodable  {
         case .unspecifiedNumber: return .unspecifiedNumber
         case .angle: return .angle
         case .boolean: return .boolean
-        case .integer: return .integer
         case .count: return .count
-        case .image: return .image
-        case .gradientImage: return .gradientImage
-        case .attributedString: return .attributedString
         case .data: return .data
         case .barcode: return .barcode
-        case .cameraCalibrationData: return .cameraCalibrationData
         case .color: return .color
         case .opaqueColor: return .opaqueColor
         case .transform: return .transform
         case .unspecifiedObject: return .unspecifiedObject
-        case .mlModel: return .mlModel
         case .string: return .string
-        case .cgImageMetadata: return .cgImageMetadata
-        case .array: return .array
         }
     }
 
