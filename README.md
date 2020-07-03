@@ -1,4 +1,4 @@
-# NGSwiftUIEquatableCrashExample
+# NGSwiftUIEquatableCrashExample (FB7847416)
 Non-equatable enums with ten or more cases with associated values cause crash when set as a SwiftUI state variable
 
 If an enum without Equatable conformance and with ten or more cases where each has an associated value is part of a State property in a SwiftUI view, and a callback triggers that state to change to a value which is equivalent, the app crashes.
@@ -14,7 +14,7 @@ Actual: App crashes
 
 Notes:
 - Reproducible on Xcode 11 and 12 beta 1, iOS 13 and 14 beta 1
-- Making the enum Equtable resolves the issue
+- Making the enum Equatable resolves the issue
 - Commenting out one of the enum cases resolves the issue
 - Commenting out the associated value of one of the enum cases resolves the issue
 - It seems that SwiftUI is doing something under the hood to compare the enum values even though the enum is not Equatable, and can't handle more than 10 cases in this case. If this is the case, it would be ideal to print some kind of warning or raise an exception instead of crashing.
