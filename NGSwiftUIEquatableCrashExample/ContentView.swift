@@ -46,7 +46,6 @@ enum FilterParameterType: Encodable  {
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(rawType, forKey: .kind)
     }
 
     // If you remove the associated type here it works?
@@ -61,48 +60,6 @@ enum FilterParameterType: Encodable  {
     case transform(info: String)
     case unspecifiedObject(info: String)
     case string(info: String)
-
-    enum RawType: String, Encodable {
-        case unspecifiedNumber
-        case unspecifiedVector
-        case angle
-        case boolean
-        case integer
-        case count
-        case image
-        case gradientImage
-        case attributedString
-        case data
-        case barcode
-        case cameraCalibrationData
-        case color
-        case opaqueColor
-        case position
-        case position3
-        case transform
-        case rectangle
-        case unspecifiedObject
-        case mlModel
-        case string
-        case cgImageMetadata
-        case offset
-    }
-
-    var rawType: RawType {
-        switch self {
-        case .unspecifiedNumber: return .unspecifiedNumber
-        case .angle: return .angle
-        case .boolean: return .boolean
-        case .count: return .count
-        case .data: return .data
-        case .barcode: return .barcode
-        case .color: return .color
-        case .opaqueColor: return .opaqueColor
-        case .transform: return .transform
-        case .unspecifiedObject: return .unspecifiedObject
-        case .string: return .string
-        }
-    }
 }
 
 struct FilterParameterInfo: Encodable {
