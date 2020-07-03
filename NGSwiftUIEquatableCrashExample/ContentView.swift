@@ -9,25 +9,21 @@
 import SwiftUI
 import CoreImage
 
-struct FilterParameterSwiftUIView: View {
-    let parameter: FilterParameterInfo
+struct ParameterView: View {
+    let parameter: Parameter
 
     var body: some View {
-        Text("\(self.parameter.name)")
+        Text("Text here")
     }
 }
 
-struct FilterDetailContentView: View {
-    let filterInfo: FilterInfo
+struct DetailView: View {
+    let info: Info
     let didTapTryIt: () -> Void
 
     var body: some View {
         VStack(alignment: .leading) {
-            VStack(alignment: .leading, spacing: 0) {
-                ForEach(filterInfo.parameters, id: \.name) { parameter in
-                    FilterParameterSwiftUIView(parameter: parameter)
-                }
-            }
+            ParameterView(parameter: info.parameters.first!)
 
             Button(action: {
                 self.didTapTryIt()
@@ -38,40 +34,38 @@ struct FilterDetailContentView: View {
     }
 }
 
-enum FilterParameterType {
+enum Type {
     // If you remove the associated type here it works?
-    case unspecifiedNumber(info: String)
-    case angle(info: String)
-    case boolean(info: String)
-    case count(info: String)
-    case data(info: String)
-    case barcode
-    case color(info: String)
-    case opaqueColor(info: String)
-    case transform(info: String)
-    case unspecifiedObject(info: String)
-    case string(info: String)
+    case one(info: String)
+    case two(info: String)
+    case three(info: String)
+    case four(info: String)
+    case five(info: String)
+    case six
+    case seven(info: String)
+    case eight(info: String)
+    case nine(info: String)
+    case ten(info: String)
+    case eleven(info: String)
 }
 
-struct FilterParameterInfo {
-    let name: String = "hey"
-    let type: FilterParameterType = .barcode
+struct Parameter {
+    let type: Type = .six
 }
 
-struct FilterInfo {
-    let name: String = "Name"
-    let parameters = [FilterParameterInfo()]
+struct Info {
+    let parameters = [Parameter()]
 }
 
 struct ContentView: View {
-    let value: FilterInfo
+    let value: Info
     let didTap: () -> Void
 
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
 
     var body: some View {
         VStack {
-            Text("Current value: \(value.name) (\(horizontalSizeClass == .compact ? "Compact" : "Not Compact"))")
+            Text("Current value: (\(horizontalSizeClass == .compact ? "Compact" : "Not Compact"))")
             Button(action: {
                 self.didTap()
             }, label: {
