@@ -23,34 +23,16 @@ enum Type {
     case eleven(info: String)
 }
 
-struct Parameter {
-    let type: Type = .six
-}
-
-struct Info {
-    let parameters = [Parameter()]
-}
-
-struct ParameterView: View {
-    let parameter: Parameter
-
-    var body: some View {
-        Text("Text here")
-    }
-}
-
 struct DetailView: View {
-    let info: Info
-    let didTapTryIt: () -> Void
+    let type: Type = .six
+    let didTap: () -> Void
 
     var body: some View {
         VStack(alignment: .leading) {
-            ParameterView(parameter: info.parameters.first!)
-
             Button(action: {
-                self.didTapTryIt()
+                self.didTap()
             }, label: {
-                Text("Try It!")
+                Text("Tap here to crash")
             })
         }
     }
