@@ -54,56 +54,13 @@ enum FilterParameterType {
 }
 
 struct FilterParameterInfo {
-    let name: String
-    let type: FilterParameterType
-
-    init() throws {
-        self.name = "hey"
-        type = .barcode
-    }
-}
-
-extension FilterParameterInfo {
-    static let filterParameterKeys = [
-        kCIOutputImageKey,
-        kCIInputBackgroundImageKey,
-        kCIInputImageKey,
-        kCIInputTimeKey,
-        kCIInputDepthImageKey,
-        kCIInputDisparityImageKey,
-        kCIInputTransformKey,
-        kCIInputScaleKey,
-        kCIInputAspectRatioKey,
-        kCIInputCenterKey,
-        kCIInputRadiusKey,
-        kCIInputAngleKey,
-        kCIInputRefractionKey,
-        kCIInputWidthKey,
-        kCIInputSharpnessKey,
-        kCIInputIntensityKey,
-        kCIInputEVKey,
-        kCIInputSaturationKey,
-        kCIInputColorKey,
-        kCIInputBrightnessKey,
-        kCIInputContrastKey,
-        kCIInputWeightsKey,
-        kCIInputGradientImageKey,
-        kCIInputMaskImageKey,
-        kCIInputShadingImageKey,
-        kCIInputTargetImageKey,
-        kCIInputExtentKey,
-        kCIInputVersionKey
-    ]
+    let name: String = "hey"
+    let type: FilterParameterType = .barcode
 }
 
 struct FilterInfo {
-    let name: String
-    let parameters: [FilterParameterInfo]
-
-    init(filter: CIFilter) throws {
-        name = "NAME"
-        parameters = [try FilterParameterInfo()]
-    }
+    let name: String = "Name"
+    let parameters = [FilterParameterInfo()]
 }
 
 struct ContentView: View {
