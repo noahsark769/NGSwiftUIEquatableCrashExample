@@ -197,34 +197,10 @@ struct AvailableView: View {
 }
 
 struct FilterParameterSwiftUIView: View {
-    static let spacing: CGFloat = 10
-
     let parameter: FilterParameterInfo
 
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("\(self.parameter.name) (\(self.parameter.classType))")
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.black)
-                .padding(8)
-                .background(Colors.primary)
-                .cornerRadius(6)
-                .padding([.leading], 8)
-                .zIndex(1)
-
-            HStack {
-                Text(self.parameter.description ?? "No description provided by CoreImage")
-                    .multilineTextAlignment(.leading)
-                    .padding(16)
-                    .padding(.top, 12)
-                Spacer(minLength: 0)
-            }
-            .frame(minWidth: 0, maxWidth: .infinity)
-            .background(Color(UIColor.secondarySystemBackground))
-            .cornerRadius(6)
-            .offset(y: -16)
-            .zIndex(0)
-        }
+        Text("\(self.parameter.name)")
     }
 }
 
@@ -234,13 +210,13 @@ struct FilterDetailContentView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            Section(header: Text("PARAMETERS").bold().foregroundColor(Colors.primary.swiftUIColor)) {
+//            Section(header: Text("PARAMETERS").bold().foregroundColor(Colors.primary.swiftUIColor)) {
                 VStack(alignment: .leading, spacing: 0) {
                     ForEach(filterInfo.parameters, id: \.name) { parameter in
                         FilterParameterSwiftUIView(parameter: parameter)
                     }
-                }.padding(.top, 8)
-            }
+                }//.padding(.top, 8)
+//            }
 
             Button(action: {
                 self.didTapTryIt()
