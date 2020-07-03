@@ -8,23 +8,26 @@
 
 import SwiftUI
 
+// Note: Things that resolve the crash in this project:
+// 1. removing an enum case
+// 2. removing an associated value from an enum case
+// 3. adding an Equtable conformance to the enum
+
 enum Type {
-    // If you remove the associated type here it works?
     case one(info: String)
     case two(info: String)
     case three(info: String)
     case four(info: String)
     case five(info: String)
-    case six
+    case six(info: String)
     case seven(info: String)
     case eight(info: String)
     case nine(info: String)
     case ten(info: String)
-    case eleven(info: String)
 }
 
 struct DetailView: View {
-    let type: Type = .six
+    let type: Type = .one(info: "one")
     let didTap: () -> Void
 
     var body: some View {
