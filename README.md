@@ -52,3 +52,4 @@ struct ContentView: View {
 More info:
 - https://noahgilmore.com/blog/swiftui-equatable-crash/
 - https://twitter.com/DAlooG/status/1268846742558179330?s=20
+- Related issue: https://github.com/noahsark769/NGSwiftUIEquatableStateIssue
